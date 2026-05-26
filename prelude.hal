@@ -1,0 +1,57 @@
+# Fixed point combinators
+Y = f: (x: f (x x)) (x: f (x x));
+Z = f: (x: f (v: x x v)) (x: f (v: x x v)); # works with strict eval
+
+# Functions
+id = x: x;
+constant = x: y: x;
+apply = f: x: f x;
+compose = f: g: x: f (g x);
+
+# Booleans
+True = t: f: t;
+False = t: f: f;
+not = x: t: f: x f t;
+and = x: y: t: f: x (y t f) f;
+or = x: y: t: f: x t (y t f);
+xor = x: y: t: f: x (y f t) (y t f);
+
+# Natural numbers
+Zero = s: z: z;
+Succ = n: s: z: s (n s z);
+one = Succ Zero;
+two = Succ one;
+three = Succ two;
+pred = n: s: z: n (g: h: h (g s)) (u: z) (u: u);
+plus = n: m: s: z: n s (m s z);
+minus = m: n: n pred m;
+times = m: n: s: z: m (n s) z;
+max = m: n: (lte m n) n m;
+is_zero = n: n (x: False) True;
+lte = m: n: is_zero (minus m n);
+gte = m: n: is_zero (minus n m);
+eq = m: n: and (lte m n) (lte n m);
+lt = m: n: not (gte m n);
+gt = m: n: not (lte m n);
+div = m: n: (lte n m) (u: Succ (div (minus m n) n)) (u: Zero) id;
+
+# Maybe
+Just = x: just: nothing: just x;
+Nothing = just: nothing: nothing;
+fromMaybe = default: maybe: maybe id default;
+
+# Lists
+Cons = x: xs: cons: nil: cons x xs;
+Nil = cons: nil: nil;
+head = l: l (x: xs: x) Nil;
+tail = l: l (x: xs: xs) Nil;
+foldr = f: z: l: l (x: xs: f x (foldr f z xs)) z;
+foldl = f: z: l: l (x: xs: foldl f (f z x) xs) z;
+map = f: l: l (x: xs: Cons (f x) (map f xs)) Nil;
+filter = p: l: l (x: xs: (p x) (Cons x xs) xs) Nil;
+find = p: l: l (x: xs: (p x) (u: x) (u: find p xs) id) Nil;
+findIndex = p: l: (Y (go: i: xs: xs (x: rest: (p x) (u: i) (u: go (Succ i) rest) id) Zero)) Zero l;
+sum = foldr plus 0;
+range = n: (Y (go: i: (lte i n) (u: Cons i (go (Succ i))) (u: Nil) id)) 0;
+all = foldr and True;
+any = foldr or False;

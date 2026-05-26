@@ -1,0 +1,15 @@
+fac = n: 
+  lte n 1 
+    1 
+    (times n (fac (minus n 1)));
+
+fib = n: 
+  lte n 2
+    1 
+    (plus (fib (minus n 1)) (fib (minus n 2)));
+
+[ sum (map fac [4, 3, 3, 3])
+, foldr times 1 [2, 3, 7]
+, times 2 (sum (range 6))
+, times 2 (fib 8)
+]
