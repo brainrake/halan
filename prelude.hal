@@ -16,7 +16,7 @@ and = x: y: t: f: x (y t f) f;
 or = x: y: t: f: x t (y t f);
 xor = x: y: t: f: x (y f t) (y t f);
 
-# Natural numbers
+# Natural numbers (Church encoding)
 Zero = s: z: z;
 Succ = n: s: z: s (n s z);
 one = Succ Zero;
@@ -43,15 +43,17 @@ fromMaybe = default: maybe: maybe id default;
 # Lists
 Cons = x: xs: cons: nil: cons x xs;
 Nil = cons: nil: nil;
+isNil = xs: xs (x: xs: False) True;
 head = l: l (x: xs: x) Nil;
 tail = l: l (x: xs: xs) Nil;
 foldr = f: z: l: l (x: xs: f x (foldr f z xs)) z;
 foldl = f: z: l: l (x: xs: foldl f (f z x) xs) z;
 map = f: l: l (x: xs: Cons (f x) (map f xs)) Nil;
-filter = p: l: l (x: xs: (p x) (Cons x xs) xs) Nil;
+filter = p: l: l (x: xs: (p x) (Cons x (filter p xs)) (filter p xs)) Nil;
 find = p: l: l (x: xs: (p x) (u: x) (u: find p xs) id) Nil;
 findIndex = p: l: (Y (go: i: xs: xs (x: rest: (p x) (u: i) (u: go (Succ i) rest) id) Zero)) Zero l;
 sum = foldr plus 0;
 range = n: (Y (go: i: (lte i n) (u: Cons i (go (Succ i))) (u: Nil) id)) 0;
 all = foldr and True;
 any = foldr or False;
+elemNat = x: xs: not (isNil (filter (eq x) xs));
