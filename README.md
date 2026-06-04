@@ -1,5 +1,7 @@
 # Exploration of Lambda calculus
 
+Prior work: https://github.com/brainrake/elan/blob/main/src/LambdaEnv.elm
+
 ## Goal
 
 Small lambda calculus based language implementation. Easy to tinker with. Show how all programs reduce to functions.
